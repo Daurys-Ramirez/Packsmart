@@ -94,8 +94,28 @@ def create_daily_outfit(day):
         "tops": choose_tops(day_requirement),
         "bottoms": choose_bottoms(day_requirement),
         "rain_protection": day["rain_protection"]
-
     }
+
+
+def create_packing_list(daily_outfits):
+    packing_list = {}
+
+    # This implimentation could be made shorter with dict.get() - to be explored
+    for outfit in daily_outfits:
+        for top in outfit["tops"]:
+            if top in packing_list:
+                packing_list[top] += 1
+            else:
+                packing_list[top] = 1
+
+        bottom = outfit["bottoms"]
+
+        if bottom in packing_list:
+            packing_list[bottom] += 1
+        else: 
+            packing_list[bottom] = 1
+
+    return packing_list
 
 city = input("enter a city: ")
 start_date = datetime.strptime(input("Enter the start date of your trip (YYYY-MM-DD): "), "%Y-%m-%d").date()
@@ -184,20 +204,20 @@ for i in range(len(daily["time"])):
     forecast.append(day)
 
 print()
-packing_list = []
+daily_outfits = []
 
 for day in forecast:
-    high_bottoms = choose_bottoms(day["high_requirement"])
-    low_bottoms = choose_bottoms(day["low_requirement"])
-    high_tops = choose_tops(day["high_requirement"])
-    low_tops = choose_tops(day["low_requirement"])
-
+    outfit = create_daily_outfit(day)
+    daily_outfits.append(outfit)
     print(day["date"])
     print("High:", day["high"], "Requirement:", round(day["high_requirement"], 2))
     print("Low:", day["low"], "Requirement:", round(day["low_requirement"], 2))
     print("Rain protection required?:", day["rain_protection"])
-    print(create_daily_outfit(day))
+    # print(create_daily_outfit(day))
     print()
+
+packing_list = create_packing_list(daily_outfits)
+print(packing_list)
 
 print(f"City: {location['name']}")
 print(f"Latitude: {location['latitude']}")
@@ -205,9 +225,3 @@ print(f"Longitude: {location['longitude']}")
 print(f"Timezone: {location['timezone']}")
 
 print()
-# test_requirement = -10
-# bottoms = choose_bottoms(test_requirement)
-# tops = choose_tops(test_requirement)
-
-# print(f"Test bottoms: {bottoms["name"]}")
-# print(f"Test tops: {tops}")
