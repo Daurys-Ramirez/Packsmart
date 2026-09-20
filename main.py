@@ -27,9 +27,7 @@ clothing = {
 
     "accessories": [
         {"name": "socks", "resistance": 0.0, "layerable": False},
-        {"name": "underwear", "resistance": 0.0, "layerable": False},
-        {"name": "gloves", "resistance": 2.0, "layerable": False},
-        {"name": "hat", "resistance": 1.0, "layerable": False}
+        {"name": "underwear", "resistance": 0.0, "layerable": False}
     ]
 }
 
@@ -87,12 +85,19 @@ def choose_tops(weather_requirement):
 
     return [item["name"] for item in best_combination]
 
+def choose_accessories(weather_requirement):
+    accessories = []
+    if weather_requirement <= -8.0:
+        accessories.extend(["gloves", "hat"])
+    return accessories
+
 def create_daily_outfit(day):
     day_requirement = day["low_requirement"]
     return {
         "date": day["date"],
         "tops": choose_tops(day_requirement),
         "bottoms": choose_bottoms(day_requirement),
+        "accessoires": choose_accessories(day_requirement),
         "rain_protection": day["rain_protection"]
     }
 
@@ -108,12 +113,19 @@ def create_packing_list(daily_outfits):
             else:
                 packing_list[top] = 1
 
+        for accessory in outfit["accessories"]:
+            packing_list[accessory] = 1
+
         bottom = outfit["bottoms"]
 
         if bottom in packing_list:
             packing_list[bottom] += 1
         else: 
             packing_list[bottom] = 1
+
+        if outfit["rain_protection"]:
+            packing_list["umbrella"]
+
 
     return packing_list
 
@@ -217,6 +229,8 @@ for day in forecast:
     print()
 
 packing_list = create_packing_list(daily_outfits)
+packing_list["socks"] = trip_length
+packing_list["underwear"] = trip_length
 print(packing_list)
 
 print(f"City: {location['name']}")
